@@ -1,0 +1,17 @@
+# dependencies
+node_modules/
+
+# environment
+.env
+
+# runtime data
+uploads/
+tmp/
+tmp/tools/
+
+# database backup
+*.sql
+
+# OS / editor
+.DS_Store
+Thumbs.db
