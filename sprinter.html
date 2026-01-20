@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>J&T POD Retur - Sprinter</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Login Page -->
+    <div id="loginPage" class="login-container">
+        <div class="login-logo">J&T</div>
+        <h1 class="login-title">SPRINTER LOGIN</h1>
+        <p class="login-subtitle">Sistem POD Retur J&T</p>
+
+        <input type="text"
+               id="sprinterId"
+               class="login-input"
+               placeholder="Masukkan ID Sprinter (contoh: LS0000009547)"
+               autocomplete="off">
+
+        <button id="loginBtn" class="login-btn">
+            <i class="fas fa-sign-in-alt"></i> LOGIN
+        </button>
+
+        <div id="loginError" class="login-error" style="display: none;">
+            <i class="fas fa-exclamation-circle"></i> ID Sprinter tidak ditemukan
+        </div>
+
+        <div style="margin-top: 30px; color: #666; font-size: 12px;">
+            <p><i class="fas fa-info-circle"></i> Contoh ID: LS0000009547</p>
+            <p style="margin-top:6px;"><i class="fas fa-shield-alt"></i> 1 ID hanya bisa login di 1 perangkat pada satu waktu</p>
+        </div>
+    </div>
+
+    <!-- Dashboard Page -->
+    <div id="dashboardPage" style="display: none;">
+        <div class="dashboard-container">
+            <!-- Header -->
+            <div class="dashboard-header">
+                <div class="user-info">
+                    <div class="user-avatar" id="userAvatar">A</div>
+                    <div class="user-details">
+                        <h2 id="sprinterName">Sprinter Name</h2>
+                        <p>Sistem POD Retur J&T</p>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 10px;">
+                    <button id="logoutBtn" class="action-btn" style="background: #e74c3c;">
+                        <i class="fas fa-sign-out-alt"></i> LOGOUT
+                    </button>
+                </div>
+            </div>
+
+            <!-- Statistics -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">AWB Pending</div>
+                    <div class="stat-value" id="pendingAwbCount">0</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-label">Total Upload</div>
+                    <div class="stat-value" id="totalUploads">0</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-label">Hari Ini</div>
+                    <div class="stat-value" id="todayUploads">0</div>
+                </div>
+            </div>
+
+            <!-- ✅ TAB BAR (baru) -->
+            <div class="awb-section" style="padding: 12px; margin-bottom: 14px;">
+                <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                    <button id="tabUploadBtn" class="action-btn success" style="flex:1; min-width:220px;">
+                        <i class="fas fa-upload"></i> UPLOAD POD
+                    </button>
+                    <button id="tabPhoneBtn" class="action-btn" style="flex:1; min-width:220px; background:#34495e;">
+                        <i class="fas fa-address-book"></i> AWB & NOMOR HP
+                    </button>
+                </div>
+                <div style="font-size:12px; color:#666; margin-top:8px;">
+                    Pilih tab sesuai kebutuhan. Upload POD tetap seperti sebelumnya.
+                </div>
+            </div>
+
+            <!-- ================= TAB PANEL: UPLOAD ================= -->
+            <div id="tabUploadPanel">
+                <!-- Upload Section (as-is, tidak diubah ID/elemen pentingnya) -->
+                <div class="awb-section">
+                    <div class="section-title">
+                        <i class="fas fa-upload"></i> UPLOAD POD
+                    </div>
+
+                    <!-- Optional: pilih dari list AWB pending -->
+                    <div style="margin: 10px 0;">
+                        <select id="awbSelect" class="awb-select" style="width: 100%;">
+                            <option value="">Pilih AWB dari list (optional)</option>
+                        </select>
+                        <div style="font-size: 12px; color: #666; margin-top: 6px;">
+                            Jika AWB tidak ada di list, boleh isi manual di bawah.
+                        </div>
+                    </div>
+
+                    <div class="awb-input-group">
+                        <input type="text"
+                               id="awbInput"
+                               class="awb-input"
+                               inputmode="latin"
+                               autocapitalize="characters"
+                               autocomplete="off"
+                               placeholder="Masukkan Nomor AWB (atau scan)">
+
+                        <button id="checkAWBBtn" class="action-btn">
+                            <i class="fas fa-search"></i> CHECK
+                        </button>
+                    </div>
+
+                    <div id="awbStatus"></div>
+
+                    <div id="uploadArea" class="upload-area">
+                        <div class="upload-icon">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                        </div>
+                        <h3>Drop gambar di sini atau klik untuk memilih</h3>
+                        <p>Maksimal 10 file, format JPG/PNG</p>
+                        <input type="file" id="fileInput" multiple accept="image/*" style="display: none;">
+                    </div>
+
+                    <div id="selectedFiles" style="display: none;">
+                        <p id="fileCount">0 file dipilih</p>
+                        <div id="fileList" class="file-list"></div>
+                    </div>
+
+                    <div id="previewArea" style="display: none; margin-top: 20px;">
+                        <p><strong>Preview:</strong></p>
+
+                        <!-- Info status preview (dipakai oleh showPreview patch) -->
+                        <div id="previewInfo" style="font-size:12px; color:#666; margin-bottom:8px;"></div>
+
+                        <div id="previewContainer" class="preview-container"></div>
+                    </div>
+
+                    <div style="display: flex; gap: 10px; margin-top: 20px;">
+                        <button id="uploadBtn" class="action-btn success">
+                            <i class="fas fa-upload"></i> UPLOAD
+                        </button>
+                        <button id="resetBtn" class="action-btn" style="background: #95a5a6;">
+                            <i class="fas fa-redo"></i> RESET
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= TAB PANEL: PHONE (baru) ================= -->
+            <div id="tabPhonePanel" style="display:none;">
+                <div class="awb-section">
+                    <div class="section-title">
+                        <i class="fas fa-address-book"></i> LIST AWB BELUM POD + NOMOR HP
+                    </div>
+
+                    <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin: 10px 0;">
+                        <input id="pendingPhoneSearch"
+                               class="awb-input"
+                               style="flex:1; min-width:220px;"
+                               placeholder="Cari AWB...">
+                        <div style="font-size:12px; color:#666;">
+                            Isi nomor HP penerima per AWB (tersimpan di perangkat ini).
+                        </div>
+                    </div>
+
+                    <div style="overflow:auto;">
+                        <table class="table" style="width:100%; border-collapse:collapse;">
+                            <thead>
+                                <tr>
+                                    <th style="text-align:left; padding:8px;">No</th>
+                                    <th style="text-align:left; padding:8px;">AWB</th>
+                                    <th style="text-align:left; padding:8px;">Nomor HP</th>
+                                    <th style="text-align:left; padding:8px;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="pendingPhoneTableBody">
+                                <tr>
+                                    <td colspan="4" style="padding:14px; color:#999; text-align:center;">
+                                        Memuat...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div style="font-size:12px; color:#666; margin-top:10px;">
+                        Tips: format bebas (08xxx / +62xxx). Sistem akan validasi 8–16 digit.
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/utils.js"></script>
+    <script src="assets/js/sprinter.js"></script>
+
+    <!-- ✅ TAB SWITCHER (baru, kecil & aman) -->
+    <script>
+      (function () {
+        const btnUpload = document.getElementById("tabUploadBtn");
+        const btnPhone  = document.getElementById("tabPhoneBtn");
+        const panelUpload = document.getElementById("tabUploadPanel");
+        const panelPhone  = document.getElementById("tabPhonePanel");
+
+        function showUpload() {
+          if (panelUpload) panelUpload.style.display = "block";
+          if (panelPhone)  panelPhone.style.display  = "none";
+          if (btnUpload) btnUpload.style.opacity = "1";
+          if (btnPhone)  btnPhone.style.opacity  = "0.85";
+        }
+
+        function showPhone() {
+          if (panelUpload) panelUpload.style.display = "none";
+          if (panelPhone)  panelPhone.style.display  = "block";
+          if (btnUpload) btnUpload.style.opacity = "0.85";
+          if (btnPhone)  btnPhone.style.opacity  = "1";
+
+          // kalau app sudah ada, refresh tabel (aman kalau belum login)
+          try {
+            if (window.sprinterApp && typeof window.sprinterApp.renderPendingPhoneTable === "function") {
+              window.sprinterApp.renderPendingPhoneTable();
+            }
+          } catch (e) {}
+        }
+
+        btnUpload && btnUpload.addEventListener("click", showUpload);
+        btnPhone  && btnPhone.addEventListener("click", showPhone);
+
+        // default ke upload
+        showUpload();
+      })();
+    </script>
+</body>
+</html>

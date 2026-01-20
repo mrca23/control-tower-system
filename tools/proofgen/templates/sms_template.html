@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Android SMS Clone (Final)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Material+Icons+Outlined" rel="stylesheet">
+
+<style>
+:root {
+  --bg-chat: #f4f4f4;
+  --bg-header: #f4f4f4;
+  --bg-status: #f4f4f4;
+  --bg-input: #e6e6e6;
+  --bg-nav: #fafafa;
+  --nav-icon: #9b9b9b;
+}
+
+/* PAGE BG */
+body {
+  margin: 0;
+  background: #d2d2d2;
+  display: flex;
+  justify-content: center;
+  padding: 20px 0;
+  font-family: Arial, sans-serif;
+}
+
+/* PHONE CONTAINER */
+.phone {
+  width: 400px;
+  height: 920px;
+  background: var(--bg-chat);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* STATUS BAR */
+.statusbar {
+  height: 40px;
+  background: var(--bg-status);
+  padding: 0 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.time {
+  font-size: 15px;
+  font-weight: 500;
+  color: #222;
+}
+
+.s-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.top-ico {
+  font-size: 18px;
+  color: #444;
+}
+
+/* NETWORK TEXT */
+.volte {
+  font-size: 12px;
+  color: #333;
+}
+
+/* SIGNAL (dinamis via SIGNAL_HTML) */
+.signal {
+  height: 11px;
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+/* BATTERY */
+.battery {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.bat-body {
+  width: 18px;
+  height: 8px;
+  border: 1px solid #444;
+  border-radius: 2px;
+  padding: 1px;
+  display: flex;
+  align-items: center;
+}
+
+.level {
+  height: 100%;
+  border-radius: 1px;
+}
+
+.cap {
+  width: 2px;
+  height: 4px;
+  background: #444;
+  border-radius: 1px;
+}
+
+.pct {
+  font-size: 12px;
+  color: #333;
+}
+
+/* HEADER */
+.header {
+  background: var(--bg-header);
+  padding: 10px 16px 12px;
+}
+
+.head-top {
+  display: flex;
+  align-items: center;
+}
+
+.back {
+  font-size: 22px;
+  color: #444;
+  margin-right: 6px;
+}
+
+.hp {
+  font-size: 19.5px;
+  font-weight: 700;
+  color: #222;
+}
+
+.h-space {
+  flex: 1;
+}
+
+.call,
+.more {
+  font-size: 21px;
+  color: #444;
+  margin-left: 12px;
+}
+
+.head-sub {
+  margin-left: 28px;
+  font-size: 13px;
+  color: #8f8f8f;
+}
+
+/* CHAT */
+.chat {
+  flex: 1;
+  padding: 20px 16px 20px;
+  overflow-y: hidden;
+}
+
+.date {
+  text-align: center;
+  font-size: 12px;
+  color: #9f9f9f;
+  margin-bottom: 8px;
+}
+
+/* Bubble wrapper */
+.wrap {
+  margin-bottom: 26px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+/* OUTGOING BUBBLE */
+.bubble {
+  background: #d8e1fe;
+  padding: 12px 16px;
+  border-radius: 18px;
+  max-width: 78%;
+  color: #000;
+  line-height: 1.45;
+  box-shadow: 0 1px 1px rgba(0,0,0,0.12);
+  margin-left: auto;
+}
+
+/* Status text */
+.status {
+  font-size: 12px;
+  color: #8b8b8b;
+  text-align: right;
+  padding-right: 6px;
+  margin-top: 1px;
+}
+
+/* INPUT BAR */
+.inputbar {
+  background: var(--bg-header);
+  padding: 8px 10px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.plus {
+  width: 52px;
+  height: 52px;
+  background: #fafafa;
+  border-radius: 50%;
+  font-size: 40px;
+  color: #333;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.inp {
+  flex: 1;
+  background: var(--bg-input);
+  height: 48px;
+  border-radius: 24px;
+  padding-left: 18px;
+  font-size: 16px;
+  color: #6d6d6d;
+  display: flex;
+  align-items: center;
+}
+
+.send {
+  width: 52px;
+  height: 52px;
+  background: #fafafa;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.send svg {
+  width: 32px;
+  height: 32px;
+  transform: rotate(10deg);
+}
+
+/* NAVIGATION BAR */
+.nav {
+  height: 58px;
+  background: var(--bg-nav);
+  padding: 4px 0;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+.rec span {
+  display: block;
+  width: 16px;
+  height: 2px;
+  background: var(--nav-icon);
+  border-radius: 2px;
+  margin: 5px 0;
+}
+
+.home {
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--nav-icon);
+  border-radius: 4px;
+}
+
+.backnav {
+  width: 0;
+  height: 0;
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  border-right: 14px solid var(--nav-icon);
+  border-radius: 4px;
+}
+</style>
+</head>
+<body>
+
+<div class="phone">
+
+  <!-- STATUS BAR -->
+  <div class="statusbar">
+    <span class="time">{{TIME}}</span>
+
+    <div class="s-right">
+
+      <!-- NOTIFICATIONS (dinamis) -->
+      {{NOTIFICATIONS}}
+
+      <!-- NETWORK TYPE -->
+      <span class="volte">{{NETWORK}}</span>
+
+      <!-- SIGNAL DYNAMIC -->
+      <div class="signal">
+        {{SIGNAL_HTML}}
+      </div>
+
+      <!-- BATTERY -->
+      <div class="battery">
+        <div class="bat-body">
+          <div class="level" style="width: {{BATT}}%; background: {{BATT_COLOR}};"></div>
+        </div>
+        <div class="cap"></div>
+        <span class="pct">{{BATT}}%</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="head-top">
+      <span class="material-icons-outlined back">arrow_back</span>
+      <div class="hp">{{PHONE}}</div>
+      <div class="h-space"></div>
+      <span class="material-icons-outlined call">call</span>
+      <span class="material-icons-outlined more">more_vert</span>
+    </div>
+    <div class="head-sub">Indonesia</div>
+  </div>
+
+  <!-- CHAT -->
+  <div class="chat">
+
+    <div class="date">{{DATE1}}</div>
+    <div class="wrap">
+      <div class="bubble">{{MSG1}}</div>
+      <div class="status">Terkirim</div>
+    </div>
+
+    <div class="date">{{DATE2}}</div>
+    <div class="wrap">
+      <div class="bubble">{{MSG2}}</div>
+      <div class="status">Terkirim</div>
+    </div>
+
+    <div class="date">{{DATE3}}</div>
+    <div class="wrap">
+      <div class="bubble">{{MSG3}}</div>
+      <div class="status">Terkirim</div>
+    </div>
+
+  </div>
+
+  <!-- INPUT BAR -->
+  <div class="inputbar">
+    <div class="plus">+</div>
+    <div class="inp">Pesan</div>
+
+    <div class="send">
+      <svg viewBox="0 0 24 24" fill="#bfbfbf">
+        <path d="M2 12L21 3l-4 18-6-5-4 3z"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- NAVIGATION BAR -->
+  <div class="nav">
+    <div class="rec"><span></span><span></span><span></span></div>
+    <div class="home"></div>
+    <div class="backnav"></div>
+  </div>
+
+</div>
+
+</body>
+</html>

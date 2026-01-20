@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Admin Tools - Proof Generator</title>
+  <style>
+    body{font-family:system-ui,Segoe UI,Arial,sans-serif;background:#0b1220;color:#e6eaf2;margin:0}
+    .wrap{max-width:980px;margin:0 auto;padding:22px}
+    .card{background:#111a2e;border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:16px;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+    h1{font-size:20px;margin:0 0 10px}
+    .muted{opacity:.75;font-size:13px}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    label{display:block;font-size:13px;margin:10px 0 6px;opacity:.9}
+    input[type="file"]{width:100%;background:#0b1220;border:1px solid rgba(255,255,255,.14);border-radius:10px;padding:10px;color:#e6eaf2}
+    .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:12px}
+    button{background:#3b82f6;border:none;color:#fff;padding:10px 14px;border-radius:10px;cursor:pointer;font-weight:600}
+    button:disabled{opacity:.55;cursor:not-allowed}
+    .btn2{background:#22c55e}
+    .btn3{background:#64748b}
+    .bar{height:10px;background:rgba(255,255,255,.08);border-radius:99px;overflow:hidden}
+    .bar > div{height:100%;background:#3b82f6;width:0%}
+    pre{white-space:pre-wrap;background:#0b1220;border:1px solid rgba(255,255,255,.12);padding:10px;border-radius:10px;max-height:220px;overflow:auto}
+    a{color:#93c5fd}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>Tools: Generator Bukti (SMS + Kontak + Timemark → JPG)</h1>
+      <div class="muted">
+        Admin-only. Output hanya gambar (ZIP). Setelah berhasil download, file output akan otomatis dihapus.
+      </div>
+
+      <div class="grid">
+        <div>
+          <label>Upload Excel (.xlsx)</label>
+          <input id="fileExcel" type="file" accept=".xlsx"/>
+        </div>
+        <div>
+          <label>Upload Timemark (JPG/PNG)</label>
+          <input id="fileTimemark" type="file" accept="image/*"/>
+        </div>
+      </div>
+
+      <div class="row">
+        <button id="btnGenerate">Generate</button>
+        <button id="btnDownload" class="btn2" disabled>Download ZIP</button>
+        <button id="btnBack" class="btn3">Kembali ke Admin</button>
+      </div>
+
+      <div style="margin-top:14px">
+        <div class="muted" id="statusText">Status: idle</div>
+        <div class="bar" style="margin-top:8px"><div id="barFill"></div></div>
+      </div>
+
+      <div style="margin-top:14px">
+        <div class="muted">Log / Error (maks 50 baris)</div>
+        <pre id="logBox">-</pre>
+      </div>
+
+      <div style="margin-top:10px" class="muted">
+        Jika halaman ini bilang Unauthorized, pastikan kamu sudah login admin di <a href="/admin">/admin</a> (PIN tersimpan di browser).
+      </div>
+    </div>
+  </div>
+
+  <script src="/assets/js/admin_tools.js"></script>
+</body>
+</html>

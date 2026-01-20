@@ -1,0 +1,33 @@
+{
+  "name": "jnt-pod-retur-system",
+  "version": "5.0.0",
+  "description": "Sistem POD Retur J&T dengan Role Management",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "setup": "echo 'Server ready! Run: npm start'"
+  },
+  "keywords": [
+    "jnt",
+    "pod",
+    "retur",
+    "delivery",
+    "tracking"
+  ],
+  "author": "J&T System",
+  "license": "MIT",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "dependencies": {
+    "archiver": "^7.0.1",
+    "busboy": "^1.6.0",
+    "dotenv": "^17.2.3",
+    "multer": "^2.0.2",
+    "mysql2": "^3.16.0",
+    "puppeteer": "^24.35.0",
+    "sharp": "^0.34.5",
+    "xlsx": "^0.18.5"
+  }
+}

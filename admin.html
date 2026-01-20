@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>J&T POD Retur - Admin Dashboard</title>
+
+  <link rel="stylesheet" href="assets/css/style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <!-- Desktop-first polish (tanpa mengubah style.css) -->
+  <style>
+    /* Admin only (desktop/table heavy) */
+    body { background:#f6f7fb; }
+
+    /* Paksa tabel 1 baris per record */
+    .data-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+    .data-table th, .data-table td {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      vertical-align: middle;
+    }
+
+    /* Wrapper supaya kalau kolom banyak -> scroll horizontal, bukan turun baris */
+    .table-wrap {
+      width: 100%;
+      overflow-x: auto;
+      border-radius: 12px;
+      background: #fff;
+      box-shadow: 0 6px 18px rgba(0,0,0,.05);
+    }
+
+    /* Lebih enak untuk desktop */
+    .dashboard-container { max-width: 1400px; margin: 0 auto; padding: 18px; }
+    .tabs { position: sticky; top: 0; z-index: 9; background: #f6f7fb; padding: 10px 0; }
+
+    .filters-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin: 12px 0 14px;
+    }
+
+    .filters-row .form-input { height: 38px; }
+    .filters-row .help {
+      font-size: 12px;
+      color: #666;
+    }
+
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; }
+
+    /* Badge minimal (kalau style.css belum punya) */
+    .badge { display:inline-block; padding: 4px 8px; border-radius: 999px; font-size: 12px; }
+    .badge.ok { background: #e8f7ee; color:#15803d; }
+    .badge.warn { background:#fff7ed; color:#c2410c; }
+    .badge.muted { background:#f1f5f9; color:#475569; }
+    .badge.info { background:#e0f2fe; color:#0369a1; }
+
+    /* Tombol kecil di tabel */
+    .btn-mini {
+      padding: 6px 10px;
+      border: 0;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #fff;
+      background: #34495e;
+    }
+    .btn-mini.danger { background:#e74c3c; }
+    .btn-mini.success { background:#2ecc71; }
+    .btn-mini.secondary { background:#64748b; }
+
+    /* Hindari modal full-screen pada desktop */
+    .modal .modal-content { border-radius: 16px; }
+	
+	.table-pager{
+    margin-top: 12px;
+    display:flex;
+    align-items:center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 6px 18px rgba(0,0,0,.05);
+    border: 1px solid rgba(15, 23, 42, 0.06);
+  }
+
+  .pager-left, .pager-right{
+    display:flex;
+    align-items:center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .pager-label{
+    font-size: 12px;
+    color:#64748b;
+    font-weight: 700;
+  }
+
+  .pager-info{
+    font-size: 12px;
+    color:#64748b;
+  }
+
+  .pager-page{
+    font-size: 12px;
+    color:#0f172a;
+    font-weight: 800;
+    padding: 6px 10px;
+    border-radius: 10px;
+    background: #f1f5f9;
+    border: 1px solid rgba(15, 23, 42, 0.06);
+  }
+
+  .pager-select{
+    height: 36px;
+    min-width: 72px;
+    padding: 6px 10px;
+    border-radius: 10px;
+    border: 1px solid rgba(15, 23, 42, 0.12);
+    background: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    color:#0f172a;
+    outline: none;
+  }
+  .pager-select:focus{
+    border-color: rgba(52, 152, 219, .7);
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, .15);
+  }
+
+  .pager-btn{
+    height: 36px;
+    padding: 0 12px;
+    border: 0;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 800;
+    color: #fff;
+    background: #3498db;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap: 8px;
+  }
+  .pager-btn:hover{
+    background: #2980b9;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(41, 128, 185, 0.20);
+  }
+  .pager-btn:disabled{
+    opacity: .5;
+    cursor:not-allowed;
+    transform:none;
+    box-shadow:none;
+  }
+
+  /* Mobile-friendly */
+  @media (max-width: 768px){
+    .table-pager{
+      padding: 10px 12px;
+    }
+    .pager-right{
+      width: 100%;
+      justify-content: space-between;
+    }
+    .pager-btn{
+      flex: 1 1 auto;
+    }
+    .pager-page{
+      flex: 0 0 auto;
+      text-align:center;
+    }
+	
+  </style>
+</head>
+
+<body>
+
+  <!-- LOGIN PAGE -->
+  <div id="loginPage" class="modal">
+    <div class="modal-content" style="max-width:420px;">
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="fas fa-user-shield"></i> ADMIN LOGIN</h3>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Admin PIN</label>
+        <input
+          type="password"
+          id="adminPin"
+          class="form-input"
+          placeholder="Masukkan Admin PIN"
+          autocomplete="off"
+        />
+      </div>
+
+      <div class="form-actions">
+        <button id="loginBtn" class="btn-primary" style="width:100%;">
+          <i class="fas fa-lock"></i> LOGIN
+        </button>
+      </div>
+
+      <div style="margin-top:16px; color:#666; font-size:12px;">
+        <div><strong>PIN default:</strong> 1234</div>
+        <div><strong>Catatan:</strong> Admin khusus desktop/laptop</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DASHBOARD PAGE -->
+  <div id="dashboardPage" style="display:none;">
+    <div class="dashboard-container">
+
+      <!-- HEADER -->
+      <div class="dashboard-header">
+        <div class="user-info">
+          <div class="user-avatar" style="background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);">
+            <i class="fas fa-user-shield"></i>
+          </div>
+          <div class="user-details">
+            <h2>Admin Dashboard</h2>
+            <p>Sistem POD Retur J&T - Monitoring & Management</p>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:10px;">
+          <button id="refreshBtn" class="action-btn">
+            <i class="fas fa-sync-alt"></i> REFRESH
+          </button>
+          <button id="logoutBtn" class="action-btn" style="background:#e74c3c;">
+            <i class="fas fa-sign-out-alt"></i> LOGOUT
+          </button>
+        </div>
+      </div>
+
+      <!-- NAV -->
+      <div class="tabs" style="margin-top:10px;">
+        <button class="nav-item tab-btn active" data-tab="dashboard">
+          <i class="fas fa-chart-bar"></i> Overview
+        </button>
+        <button class="nav-item tab-btn" data-tab="sprinter">
+          <i class="fas fa-users"></i> Sprinter
+        </button>
+        <button class="nav-item tab-btn" data-tab="awb">
+          <i class="fas fa-barcode"></i> AWB
+        </button>
+        <button class="nav-item tab-btn" data-tab="uploads">
+          <i class="fas fa-camera"></i> POD
+        </button>
+		<button class="nav-item tab-btn" data-tab="tools">
+		  <i class="fas fa-toolbox"></i> Tools
+		</button>
+
+      </div>
+
+      <!-- DASHBOARD TAB -->
+      <div id="dashboardTab" class="tab-content" style="display:block;">
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-label">Total Sprinter</div>
+            <div class="stat-value" id="totalSprinter">0</div>
+            <div style="color:#666; font-size:12px; margin-top:10px;">
+              <span id="activeSprinter">0</span> aktif
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-label">Total AWB</div>
+            <div class="stat-value" id="totalAWB">0</div>
+            <div style="color:#666; font-size:12px; margin-top:10px;">
+              <span id="pendingAWB">0</span> pending
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-label">Delivered AWB</div>
+            <div class="stat-value" id="deliveredAWB">0</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-label">Total POD</div>
+            <div class="stat-value" id="totalUploads">0</div>
+            <div style="color:#666; font-size:12px; margin-top:10px;">
+              <span id="todayUploads">0</span> hari ini
+            </div>
+          </div>
+        </div>
+
+        <!-- Dashboard main table -->
+        <div class="history-section" style="margin-top:20px;">
+          <div class="section-title">
+            <i class="fas fa-table"></i> RINGKASAN POD PER SPRINTER
+          </div>
+
+          <!-- Filter tanggal dashboard (NEW) -->
+          <div class="filters-row">
+            <div class="help"><strong>Filter Tanggal Sampai:</strong></div>
+            <input type="date" id="dashFromDate" class="form-input" />
+            <span class="help">s/d</span>
+            <input type="date" id="dashToDate" class="form-input" />
+            <button id="dashApplyFilterBtn" class="action-btn">
+              <i class="fas fa-filter"></i> Terapkan
+            </button>
+            <button id="dashResetFilterBtn" class="action-btn" style="background:#64748b;">
+              <i class="fas fa-rotate-left"></i> Reset
+            </button>
+            <span class="help">*Data tetap 1 baris per record (scroll ke samping bila perlu)</span>
+          </div>
+
+          <div class="table-wrap" style="margin-top:8px;">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th style="width:160px;">Ranking Terburuk</th>
+                  <th style="width:260px;">Nama Sprinter</th>
+                  <th style="width:140px;">Total AWB</th>
+                  <th style="width:120px;">Ada POD</th>
+                  <th style="width:140px;">Belum Ada POD</th>
+                </tr>
+              </thead>
+              <tbody id="recentActivityTable">
+                <tr>
+                  <td colspan="5" style="text-align:center; padding:20px; color:#999;">
+                    Loading...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- SPRINTER TAB -->
+      <div id="sprinterTab" class="tab-content" style="display:none;">
+        <div class="awb-section">
+          <div class="section-title">
+            <i class="fas fa-users"></i> SPRINTER MANAGEMENT
+            <span id="sprinterCount" style="margin-left:10px; background:#e3f2fd; color:#1976d2; padding:3px 8px; border-radius:10px; font-size:12px;">0</span>
+          </div>
+
+          <div class="filters-row">
+            <button id="addSprinterBtn" class="action-btn success">
+              <i class="fas fa-user-plus"></i> TAMBAH SPRINTER
+            </button>
+
+            <select id="filterSprinterStatus" class="form-input" style="width:180px;">
+              <option value="all">Semua Status</option>
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+            </select>
+
+            <input type="text" id="searchSprinter" placeholder="Cari sprinter..." class="form-input" style="width:320px;" />
+          </div>
+
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th style="width:180px;">ID</th>
+                  <th style="width:280px;">Nama</th>
+                  <th style="width:120px;">Status</th>
+                  <th style="width:220px;">Last Login</th>
+                  <th style="width:220px;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="sprinterTable">
+                <tr>
+                  <td colspan="5" style="text-align:center; padding:30px; color:#999;">
+                    Loading...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div style="margin-top:8px; font-size:12px; color:#666;">
+            * Actions: tombol <strong>Edit</strong> & <strong>Hapus</strong> (di-handle admin.js).
+          </div>
+        </div>
+      </div>
+
+      <!-- AWB TAB -->
+      <div id="awbTab" class="tab-content" style="display:none;">
+        <div class="awb-section">
+          <div class="section-title">
+            <i class="fas fa-barcode"></i> AWB LIST
+            <span style="margin-left:10px; color:#666; font-size:12px;">
+              Total: <span id="awbCount">0</span>
+            </span>
+          </div>
+
+          <!-- UPLOAD AWB (ADMIN) -->
+          <div class="filters-row">
+            <input type="file" id="awbFile" accept=".xlsx,.xls" class="form-input" style="width:300px;" />
+            <button id="uploadAwbBtn" class="action-btn success">
+              <i class="fas fa-file-excel"></i> Upload AWB (Excel)
+            </button>
+            <span class="help">Format sesuai template upload AWB.</span>
+          </div>
+
+          <!-- Filter + Search + Filter tanggal (NEW) -->
+          <div class="filters-row">
+            <select id="filterAWBStatus" class="form-input" style="width:180px;">
+              <option value="all">Semua Status</option>
+              <option value="pending">Pending</option>
+              <option value="delivered">Delivered</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+
+            <input type="text" id="searchAWB" placeholder="Cari AWB / Sprinter..." class="form-input" style="width:320px;" />
+
+            <div class="help" style="margin-left:6px;"><strong>Filter Tanggal Sampai:</strong></div>
+            <input type="date" id="awbFromDate" class="form-input" />
+            <span class="help">s/d</span>
+            <input type="date" id="awbToDate" class="form-input" />
+
+            <button id="awbApplyDateBtn" class="action-btn">
+              <i class="fas fa-filter"></i> Terapkan
+            </button>
+            <button id="awbResetDateBtn" class="action-btn" style="background:#64748b;">
+              <i class="fas fa-rotate-left"></i> Reset
+            </button>
+          </div>
+
+          <!-- Bulk delete (NEW) -->
+          <div class="table-wrap" style="padding:14px; margin-bottom:14px;">
+            <div style="display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap; align-items:center;">
+              <div>
+                <div style="font-weight:700; margin-bottom:6px;">
+                  <i class="fas fa-trash"></i> Hapus Massal AWB (Excel)
+                </div>
+                <div class="help">
+                  Upload file Excel dengan <strong>1 kolom saja</strong>: <span class="mono">awb</span>
+                </div>
+              </div>
+
+              <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+                <button id="downloadDeleteTemplateBtn" class="action-btn">
+                  <i class="fas fa-download"></i> Download Template Hapus
+                </button>
+
+                <input type="file" id="deleteAwbFile" accept=".xlsx,.xls" class="form-input" style="width:300px;" />
+
+                <button id="bulkDeleteBtn" class="action-btn" style="background:#e74c3c;">
+                  <i class="fas fa-trash"></i> HAPUS MASSAL
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th style="width:70px;">No</th>
+                  <th style="width:220px;">AWB</th>
+                  <th style="width:180px;">Kode Sprinter</th>
+                  <th style="width:280px;">Nama Sprinter</th>
+                  <th style="width:160px;">Status</th>
+                  <th style="width:160px;">Added By</th>
+                  <th style="width:170px;">Tanggal Sampai</th>
+				  <th style="width:160px;">Nomor HP</th>
+                  <th style="width:140px;">Action</th>
+                </tr>
+              </thead>
+              <tbody id="awbListTable">
+                <tr>
+                  <td colspan="8" style="text-align:center; padding:30px; color:#999;">
+                    Loading...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Pager AWB disisipkan oleh admin.js -->
+        </div>
+      </div>
+
+      <!-- POD TAB -->
+      <div id="uploadsTab" class="tab-content" style="display:none;">
+        <div class="awb-section">
+          <div class="section-title">
+            <i class="fas fa-camera"></i> POD
+            <span style="margin-left:10px; color:#666; font-size:12px;">
+              Total: <span id="uploadCount">0</span>
+            </span>
+          </div>
+
+          <div class="filters-row">
+            <button id="downloadPodsZipBtn" class="action-btn success">
+              <i class="fas fa-file-archive"></i> DOWNLOAD POD (ZIP)
+            </button>
+
+            <button id="downloadPodsExcelBtn" class="action-btn">
+              <i class="fas fa-file-excel"></i> DOWNLOAD LIST POD (EXCEL)
+            </button>
+
+            <span class="help">*File gambar akan diunduh dengan nama = nomor resi.</span>
+          </div>
+
+          <div class="filters-row">
+            <select id="filterUploadStatus" class="form-input" style="width:200px;">
+			  <option value="all">Semua Status</option>
+			  <option value="pending">Pending</option>
+			  <option value="accepted">Diterima</option>
+			  <option value="rejected">Ditolak</option>
+			</select>
+
+            <input type="text" id="searchUploads" placeholder="Cari AWB / Sprinter..." class="form-input" style="width:320px;" />
+
+            <span class="help">*Tabel tidak wrapping: geser kanan-kiri jika kolom panjang.</span>
+          </div>
+
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th style="width:200px;">Timestamp</th>
+                  <th style="width:170px;">Sprinter ID</th>
+                  <th style="width:260px;">Sprinter</th>
+                  <th style="width:220px;">AWB</th>
+                  <th style="width:140px;">Foto POD</th>
+                  <th style="width:140px;">Foto Fisik</th>
+                  <th style="width:180px;">Validasi</th>
+                  <th style="width:240px;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="uploadsTable">
+                <tr>
+                  <td colspan="9" style="text-align:center; padding:30px; color:#999;">
+                    Loading...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+      </div>
+	  <!-- TOOLS TAB (ADMIN ONLY) -->
+	<div id="toolsTab" class="tab-content" style="display:none;">
+	  <div class="awb-section">
+		<div class="section-title">
+		  <i class="fas fa-toolbox"></i> TOOLS (ADMIN)
+		</div>
+
+		<div class="table-wrap" style="padding:14px;">
+		  <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:center; justify-content:space-between;">
+			<div>
+			  <div style="font-weight:800; margin-bottom:6px;">Proof Generator</div>
+			  <div class="help">
+				Generate <strong>output gambar (ZIP)</strong> dari Excel (admin only). Setelah download, output akan dihapus otomatis.
+			  </div>
+			</div>
+
+			<div style="display:flex; gap:10px; flex-wrap:wrap;">
+			  <a href="/admin-tools" class="action-btn success" style="text-decoration:none;">
+				<i class="fas fa-wand-magic-sparkles"></i> BUKA PROOFGEN
+			  </a>
+			</div>
+		  </div>
+		</div>
+
+		<div style="margin-top:10px; font-size:12px; color:#666;">
+		  * Menu ini hanya shortcut ke halaman tools internal: <span class="mono">/admin-tools</span>
+		</div>
+	  </div>
+	</div>
+
+
+    </div>
+  </div>
+
+  <!-- LOADING OVERLAY -->
+  <div id="loadingOverlay" class="modal" style="display:none;">
+    <div class="modal-content" style="max-width:360px; text-align:center;">
+      <div style="font-size:18px; margin-bottom:10px;"><i class="fas fa-spinner fa-spin"></i> Loading...</div>
+      <div style="color:#666; font-size:12px;">Memuat data, mohon tunggu</div>
+    </div>
+  </div>
+
+  <!-- ADD SPRINTER MODAL -->
+  <div id="addSprinterModal" class="modal" style="display:none;">
+    <div class="modal-content" style="max-width:520px;">
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="fas fa-user-plus"></i> Tambah Sprinter</h3>
+        <button class="modal-close">×</button>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">ID Sprinter</label>
+        <input type="text" id="newSprinterId" class="form-input" placeholder="LS0000009547" />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Nama Sprinter</label>
+        <input type="text" id="newSprinterName" class="form-input" placeholder="Nama lengkap" />
+      </div>
+
+      <div class="form-actions">
+        <button class="btn-secondary modal-close">BATAL</button>
+        <button id="saveSprinterBtn" class="btn-primary">SIMPAN</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- VIEW POD MODAL -->
+  <div id="viewUploadModal" class="modal" style="display:none;">
+    <div class="modal-content" style="max-width:1100px;">
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="fas fa-image"></i> Detail POD</h3>
+        <button class="modal-close">×</button>
+      </div>
+
+      <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; margin-bottom:10px;">
+        <div><strong>AWB:</strong> <span id="modalUploadAWB">-</span></div>
+        <div><strong>Sprinter:</strong> <span id="modalUploadSprinter">-</span></div>
+        <div><strong>Waktu:</strong> <span id="modalUploadTime">-</span></div>
+      </div>
+
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin:15px 0;">
+        <div style="text-align:center;">
+          <div style="font-size:12px; color:#666; margin-bottom:6px;">Foto POD (Merged)</div>
+          <img id="modalUploadImage" alt="POD" style="max-width:100%; max-height:62vh; border-radius:12px;" />
+        </div>
+
+        <div style="text-align:center;">
+          <div style="font-size:12px; color:#666; margin-bottom:6px;">Foto Fisik</div>
+          <img id="modalPhysicalImage" alt="FOTO FISIK" style="max-width:100%; max-height:62vh; border-radius:12px;" />
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn-secondary modal-close">TUTUP</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="assets/js/config.js" defer></script>
+  <script src="assets/js/utils.js" defer></script>
+  <script src="assets/js/admin.js" defer></script>
+</body>
+</html>

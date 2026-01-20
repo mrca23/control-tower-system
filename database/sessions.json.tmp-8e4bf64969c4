@@ -1,0 +1,37 @@
+[
+  {
+    "user_id": "LS0000189309",
+    "session_id": "cfa7f8c8e4e59a03abaa4bf0d65ecb59dfff44ce99364461",
+    "role": "sprinter",
+    "login_time": "2026-01-15T12:36:55.710Z",
+    "last_activity": "2026-01-15T12:36:55.710Z"
+  },
+  {
+    "user_id": "LS0000003099",
+    "session_id": "b62b4f63090b3807c0fbb7949e43b388e07ef6baeff4abd3",
+    "role": "sprinter",
+    "login_time": "2026-01-16T15:55:54.178Z",
+    "last_activity": "2026-01-17T01:37:39.752Z"
+  },
+  {
+    "user_id": "LAH010060",
+    "session_id": "5d3d9e3b29fbcde7bed88621cc550a2baec243203679490f",
+    "role": "sprinter",
+    "login_time": "2026-01-17T04:33:29.210Z",
+    "last_activity": "2026-01-17T04:33:29.272Z"
+  },
+  {
+    "user_id": "ADMIN",
+    "session_id": "e4489f7ce27670a36abf5e720ac3ccd9baf49fe53fc412ef",
+    "role": "admin",
+    "login_time": "2026-01-17T06:59:00.805Z",
+    "last_activity": "2026-01-17T06:59:00.805Z"
+  },
+  {
+    "user_id": "01747937",
+    "session_id": "6e05d4f55e5123bde8966df1bfb9e38f7372960754f8e626",
+    "role": "sprinter",
+    "login_time": "2026-01-17T07:02:35.534Z",
+    "last_activity": "2026-01-17T08:11:35.798Z"
+  }
+]
