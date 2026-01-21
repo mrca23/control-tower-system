@@ -1,0 +1,4 @@
+date,area,type,title,symptom,root_cause,fix,status,refs
+2026-01-21,Repo Structure,Success,Move assets into public/assets,"git mv/move denied (Access is denied)","Windows folder lock + CMD glob limitation","robocopy /E /MOVE; git add public/assets; git rm -r assets",DONE,"commit 88f2514"
+2026-01-21,Repo Structure,Success,Merge repo structure into main,"branch chore/repo-structure merged clean","N/A","git merge --no-ff + push main",DONE,"merge commit 5d3de52"
+2026-01-21,Runtime,Info,/admin returns 404 after restructure,"GET http://localhost:3000/admin -> 404","Static routing/file path still points to old locations after moving to public/ + src/","Pending: adjust server static routing to serve public/ and admin.html",TODO,"src/server.js"
